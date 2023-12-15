@@ -29,6 +29,9 @@ public class ConnectionMaintainer implements Runnable {
         // username reader
         usernamevalidator();
         System.out.println("Current username list: " + MainServer.usernames);
+
+
+
     }
 
     private void usernamevalidator() {

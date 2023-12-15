@@ -30,8 +30,9 @@ public class MainMember {
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
-
         System.out.println("Username was set! Your username will be: " + username);
+
+
     }
 
     private static Socket setSocketConnection() {
@@ -82,7 +83,7 @@ public class MainMember {
             break;
         }
 
-        // cls();
+        cls();
         return username;
     }
 

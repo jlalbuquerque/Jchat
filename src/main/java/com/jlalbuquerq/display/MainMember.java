@@ -66,16 +66,16 @@ public class MainMember {
 
         while (true) {
             System.out.print("Your username is: ");
-            username = input.nextLine().trim();
+            username = input.nextLine().strip();
 
             if (username.isBlank()) {
-                System.out.print("Your name must not be blank, try other username: ");
+                System.out.println("Your name must not be blank, try other username: ");
                 continue;
             } else if (!username.matches("\\w+")) {
-                System.out.print("Your name must contain only alphanumeric characters, try other username: ");
+                System.out.println("Your name must contain only alphanumeric characters, try other username: ");
                 continue;
             } else if (usernamesContains(username)) {
-                System.out.print("Someone already uses this username, try another: ");
+                System.out.println("Someone already uses this username, try another: ");
                 continue;
             }
 

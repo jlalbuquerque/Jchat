@@ -7,6 +7,7 @@
     <groupId>com.jlalbuquerq</groupId>
     <artifactId>Jchat</artifactId>
     <version>0.1-PRE_ALPHA</version>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -19,6 +20,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.jlalbuquerq.display.MainMember</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
                 <executions>
                     <execution>
                         <id>main-member</id>
@@ -26,6 +35,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <classifier>member</classifier>
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>
@@ -41,6 +51,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <classifier>server</classifier>
                             <archive>
                                 <manifest>
                                     <addClasspath>true</addClasspath>

@@ -1,6 +1,8 @@
 package com.jlalbuquerq.server;
 
+import com.jlalbuquerq.client.commands.Command;
 import com.jlalbuquerq.display.MainServer;
+import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
 
 import java.io.*;
 import java.net.Socket;
@@ -31,7 +33,17 @@ public class ConnectionMaintainer implements Runnable {
         System.out.println("Current username list: " + MainServer.usernames);
 
 
-
+        // action receiver
+        while (true) {
+            CommandCommunicationSetter<Command> action = new CommandCommunicationSetter<>();
+            Command command;
+            try {
+                command = action.receiveCommand(clientInput);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            command.execute();
+        }
     }
 
     private void usernamevalidator() {

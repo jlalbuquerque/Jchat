@@ -1,5 +1,6 @@
 package com.jlalbuquerq.display;
 
+import com.jlalbuquerq.server.Chat;
 import com.jlalbuquerq.server.ConnectionMaintainer;
 
 import java.io.IOException;
@@ -8,11 +9,13 @@ import java.net.Socket;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.*;
 
 public class MainServer {
     public static Set<String> usernames = Collections.synchronizedSet(new HashSet<>());
     private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+    public static Vector<Chat> chats = new Vector<>();
 
     public static void main(String[] args) {
         ServerSocket serverSocket;

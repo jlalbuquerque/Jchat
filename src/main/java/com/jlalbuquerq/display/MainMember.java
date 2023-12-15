@@ -1,5 +1,10 @@
 package com.jlalbuquerq.display;
 
+import com.jlalbuquerq.client.commands.Command;
+import com.jlalbuquerq.client.commands.CreateNewChatCommand;
+import com.jlalbuquerq.client.commands.SeeCurrentChatsCommand;
+import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,26 +17,55 @@ public class MainMember {
     static Scanner input = new Scanner(System.in);
     static Socket socket;
     static DataOutputStream output;
-    static DataInputStream inputLineReader;
+    static DataInputStream dataInputServerStream;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         socket = setSocketConnection();
 
-        try {
+        try {  // Setting socket connection
             output = new DataOutputStream(socket.getOutputStream());
-            inputLineReader = new DataInputStream(socket.getInputStream());
+            dataInputServerStream = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        String username;
+
+        String username;  // Setting username
         try {
             username = setUsername();
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
-
         System.out.println("Username was set! Your username will be: " + username);
+
+        CommandCommunicationSetter<Command> commandSetter = new CommandCommunicationSetter<>();
+        while (true) {
+            createOrEnterChat(commandSetter);
+        }
+    }
+
+    private static void createOrEnterChat(CommandCommunicationSetter<Command> commandSetter) throws IOException {
+        System.out.println("""
+                What do you want to do?:
+                1: Create new chat;
+                2: Enter existing chat.""");
+
+        System.out.print("Your option: ");
+        String option = input.nextLine().strip();
+        while (!option.equals("1") && !option.equals("2")) {
+            System.out.println("Invalid option, try again (1 or 2)");
+            System.out.print("Your option: ");
+            option = input.nextLine().strip();
+        }
+
+        Command action;
+        if (option.equals("1")) {
+            action = new CreateNewChatCommand();
+        } else {
+            action = new SeeCurrentChatsCommand();
+        }
+
+        commandSetter.sendCommand(action, output);
     }
 
     private static Socket setSocketConnection() {
@@ -82,7 +116,7 @@ public class MainMember {
             break;
         }
 
-        // cls();
+        cls();
         return username;
     }
 

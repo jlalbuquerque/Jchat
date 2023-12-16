@@ -7,5 +7,5 @@ import java.io.Serializable;
 import java.net.Socket;
 
 public interface Command extends Serializable {
-    void execute(Socket socket) throws IOException;
+    void execute(Socket socket) throws IOException, ClassNotFoundException;
 }

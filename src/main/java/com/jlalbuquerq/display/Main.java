@@ -7,7 +7,7 @@ import java.util.Scanner;
 import static com.jlalbuquerq.internal.ScreenMethods.cls;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
         System.out.println("Hello, welcome to Jchat! There you can communicate yourself with many other people in real time");
 
         Scanner input = new Scanner(System.in);

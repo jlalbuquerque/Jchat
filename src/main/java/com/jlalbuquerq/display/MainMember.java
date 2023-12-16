@@ -21,7 +21,7 @@ public class MainMember {
     static DataOutputStream output;
     static DataInputStream dataInputServerStream;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         socket = setSocketConnection();
 
         try {  // Setting socket connection
@@ -48,7 +48,7 @@ public class MainMember {
         }
     }
 
-    private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException {
+    private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException, ClassNotFoundException {
         System.out.println("""
                 What do you want to do?:
                 1: Create new chat;

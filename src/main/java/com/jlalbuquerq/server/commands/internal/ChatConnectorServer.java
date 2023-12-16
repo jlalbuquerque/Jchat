@@ -1,15 +1,19 @@
 package com.jlalbuquerq.server.commands.internal;
 
 import com.jlalbuquerq.intercommunication.Command;
+import com.jlalbuquerq.server.Chat;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class ChatConnectorServer implements Command {
-    @Override
-    public void execute(Socket socket) throws IOException {
-        System.out.println("Running Chat Connector Server");
+public class ChatConnectorServer {
+    public void execute(Socket socket, Chat chat) throws IOException {
+        DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+        DataInputStream clientInput = new DataInputStream(socket.getInputStream());
+
+
+
     }
 }

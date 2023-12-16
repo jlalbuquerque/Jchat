@@ -8,7 +8,9 @@ import com.jlalbuquerq.server.commands.internal.ChatConnectorServer;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Optional;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 public class SeeCurrentChatsCommandServer implements Command {
     @Override
@@ -27,7 +29,13 @@ public class SeeCurrentChatsCommandServer implements Command {
                 break;
             } else if (option.matches("\\d+")) {
                 if (MainServer.chats.stream().anyMatch(chat -> chat.idChat == Integer.parseInt(option))) {
+                    Chat chat = MainServer.chats.stream().filter(it -> it.idChat == Integer.parseInt(option)).findFirst().orElse(null);
+                    if (chat == null) {
+                        output.writeBoolean(false);
+                        continue;
+                    }
                     output.writeBoolean(true);
+                    new ChatConnectorServer().execute(socket, chat);
                     break;
                 }
                 else {

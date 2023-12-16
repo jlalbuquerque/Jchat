@@ -1,8 +1,10 @@
 package com.jlalbuquerq.display;
 
-import com.jlalbuquerq.client.commands.Command;
-import com.jlalbuquerq.client.commands.CreateNewChatCommand;
-import com.jlalbuquerq.client.commands.SeeCurrentChatsCommand;
+import com.jlalbuquerq.client.commands.CreateNewChatCommandClient;
+import com.jlalbuquerq.client.commands.SeeCurrentChatsCommandClient;
+import com.jlalbuquerq.intercommunication.Command;
+import com.jlalbuquerq.server.commands.CreateNewChatCommandServer;
+import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
 import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
 
 import java.io.DataInputStream;
@@ -38,13 +40,15 @@ public class MainMember {
         }
         System.out.println("Username was set! Your username will be: " + username);
 
-        CommandCommunicationSetter<Command> commandSetter = new CommandCommunicationSetter<>();
+
+        // Sending commands
+        CommandCommunicationSetter commandSetter = new CommandCommunicationSetter();
         while (true) {
             createOrEnterChat(commandSetter);
         }
     }
 
-    private static void createOrEnterChat(CommandCommunicationSetter<Command> commandSetter) throws IOException {
+    private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException {
         System.out.println("""
                 What do you want to do?:
                 1: Create new chat;
@@ -60,21 +64,18 @@ public class MainMember {
 
         Command action;
         if (option.equals("1")) {
-            action = new CreateNewChatCommand();
+            action = new CreateNewChatCommandServer();
+            commandSetter.sendCommand(action, output);
+            new CreateNewChatCommandClient().execute(socket);
         } else {
-            action = new SeeCurrentChatsCommand();
+            action = new SeeCurrentChatsCommandServer();
+            commandSetter.sendCommand(action, output);
+            new SeeCurrentChatsCommandClient().execute(socket);
         }
-
-        commandSetter.sendCommand(action, output);
     }
 
     private static Socket setSocketConnection() {
         System.out.println("Write the server port (there must be a open server)");
-        try {
-            Thread.sleep(1200);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
         int port;
         System.out.print("Server port: ");
@@ -94,7 +95,6 @@ public class MainMember {
 
     private static String setUsername() throws InterruptedException, IOException {
         System.out.println("First, let's define your username");
-        Thread.sleep(500);
 
         String username;
 
@@ -121,7 +121,7 @@ public class MainMember {
     }
 
     private static boolean usernamesContains(String username) throws IOException {
-        output.writeUTF(username + "\n");
+        output.writeUTF(username);
         output.flush();
 
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());

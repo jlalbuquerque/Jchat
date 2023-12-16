@@ -9,7 +9,6 @@ import static com.jlalbuquerq.internal.ScreenMethods.cls;
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
         System.out.println("Hello, welcome to Jchat! There you can communicate yourself with many other people in real time");
-        Thread.sleep(1500);
 
         Scanner input = new Scanner(System.in);
 

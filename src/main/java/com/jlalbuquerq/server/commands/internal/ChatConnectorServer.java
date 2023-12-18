@@ -1,6 +1,5 @@
 package com.jlalbuquerq.server.commands.internal;
 
-import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.server.Chat;
 
 import java.io.DataInputStream;

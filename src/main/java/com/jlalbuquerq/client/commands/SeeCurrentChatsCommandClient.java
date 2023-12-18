@@ -3,6 +3,7 @@ package com.jlalbuquerq.client.commands;
 import com.jlalbuquerq.client.commands.internal.ChatConnectorClient;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.intercommunication.ObjectMail;
+import com.jlalbuquerq.internal.collections.Pair;
 import com.jlalbuquerq.server.Chat;
 
 import java.io.*;
@@ -20,14 +21,13 @@ public class SeeCurrentChatsCommandClient implements Command {
         DataInputStream serverInput = new DataInputStream(socket.getInputStream());
 
 
-        ObjectMail<Vector<Chat>> vectorObjectMail = new ObjectMail<>();
-        Vector<Chat> chats = vectorObjectMail.receiveObject(serverInput);
+        ObjectMail<Vector<Pair<Integer, String>>> chatObjectMail = new ObjectMail<>();
+        Vector<Pair<Integer, String>> chatsInfo = chatObjectMail.receiveObject(serverInput);
 
-        if (chats.isEmpty()) {
+        if (chatsInfo.isEmpty()) {
             System.out.println("There is no chat right now");
-        }
-        else for (Chat chat : chats) {
-            System.out.printf("id: %d | name: %s\n", chat.idChat, chat.chatName);
+        } else for (Pair<Integer, String> chatPair : chatsInfo) {
+            System.out.printf("id: %d | name: %s\n", chatPair.first, chatPair.second);
         }
 
         while (true) {
@@ -37,14 +37,13 @@ public class SeeCurrentChatsCommandClient implements Command {
             if (option.equals("back")) {
                 output.writeUTF("back");
                 break;
-            }
-            else if (option.equals("reload")) {
+            } else if (option.equals("reload")) {
                 output.writeUTF("reload");
-                chats = vectorObjectMail.receiveObject(serverInput);
-                if (chats.isEmpty()) {
+                chatsInfo = chatObjectMail.receiveObject(serverInput);
+                if (chatsInfo.isEmpty()) {
                     System.out.println("There is no chat right now");
-                } else for (Chat chat : chats) {
-                    System.out.printf("id: %d | name: %s\n", chat.idChat, chat.chatName);
+                } else for (Pair<Integer, String> chatPair : chatsInfo) {
+                    System.out.printf("id: %d | name: %s\n", chatPair.first, chatPair.second);
                 }
             } else {
                 output.writeUTF(option);

@@ -1,7 +1,5 @@
 package com.jlalbuquerq.client.commands.internal;
 
-import com.jlalbuquerq.intercommunication.Command;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,5 +12,6 @@ public class ChatConnectorClient {
 
 
         System.out.println("Running Chat Connector Client");
+
     }
 }

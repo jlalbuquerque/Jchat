@@ -1,41 +1,62 @@
 package com.jlalbuquerq.server;
 
-import com.jlalbuquerq.client.Admin;
 import com.jlalbuquerq.client.Member;
 
-import javax.crypto.SecretKey;
-import javax.crypto.KeyGenerator;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Chat {
-    static int numberChat = 1;
+    private static final AtomicInteger numberChat = new AtomicInteger(0);
 
     public int idChat;
-    private SecretKey key;
     public String chatName;
-    private Vector<Member> members;
-    private Admin admin;
-    private Vector<Socket> clientsSockets;
 
-    public Chat(String chatName, Admin adm) throws NoSuchAlgorithmException {
+    public boolean needsPasswd;
+    private String hashPasswd;
+    private String salt;
+
+    private final Member admin;
+    private final Vector<Socket> clientsSockets;
+
+    // Public chat
+    public Chat(String chatName, Member admin, String passwd, String salt) {
         this.chatName = chatName;
-        this.key = generateKey();
-        this.idChat = numberChat;
-        numberChat++;
-        this.members = new Vector<>();
+        this.idChat = numberChat.addAndGet(1);
+        this.admin = admin;
+        this.clientsSockets = new Vector<>();
+        this.needsPasswd = true;
+        this.hashPasswd = passwd;
+        this.salt = salt;
+    }
+
+    // Private chat
+    public Chat(String chatName, Member adm) {
+        this.chatName = chatName;
+        this.idChat = numberChat.addAndGet(1);
         this.admin = adm;
         this.clientsSockets = new Vector<>();
+        this.needsPasswd = false;
     }
 
-    private SecretKey generateKey() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(128);
-        return keyGen.generateKey();
+    public void sendMessage(String message, Member member) {
+        for (Socket socket : clientsSockets) {
+            try {
+                DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+                output.writeUTF("%s: %s".formatted(member.username, message));
+                output.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public boolean checkKey(SecretKey inputKey) {
-        return this.key.equals(inputKey);
+    public boolean checkPasswd(String hashedPasswdInput) {
+        return this.hashPasswd.equals(hashedPasswdInput);
+    }
+    public String getSalt() {
+        return salt;
     }
 }

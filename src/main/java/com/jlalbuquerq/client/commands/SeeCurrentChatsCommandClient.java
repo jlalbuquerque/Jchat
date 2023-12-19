@@ -3,6 +3,8 @@ package com.jlalbuquerq.client.commands;
 import com.jlalbuquerq.client.commands.internal.ChatConnectorClient;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.intercommunication.ObjectMail;
+import com.jlalbuquerq.internal.collections.Pair;
+import com.jlalbuquerq.internal.security.SecurePasswd;
 import com.jlalbuquerq.server.Chat;
 
 import java.io.*;
@@ -11,23 +13,21 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
 
-public class SeeCurrentChatsCommandClient implements Command {
+public class SeeCurrentChatsCommandClient {
     private static final Scanner input = new Scanner(System.in);
 
-    @Override
     public void execute(Socket socket) throws IOException, ClassNotFoundException {
         DataOutputStream output = new DataOutputStream(socket.getOutputStream());
         DataInputStream serverInput = new DataInputStream(socket.getInputStream());
 
 
-        ObjectMail<Vector<Chat>> vectorObjectMail = new ObjectMail<>();
-        Vector<Chat> chats = vectorObjectMail.receiveObject(serverInput);
+        ObjectMail<Vector<Pair<Integer, String>>> chatObjectMail = new ObjectMail<>();
+        Vector<Pair<Integer, String>> chatsInfo = chatObjectMail.receiveObject(serverInput);
 
-        if (chats.isEmpty()) {
+        if (chatsInfo.isEmpty()) {
             System.out.println("There is no chat right now");
-        }
-        else for (Chat chat : chats) {
-            System.out.printf("id: %d | name: %s\n", chat.idChat, chat.chatName);
+        } else for (Pair<Integer, String> chatPair : chatsInfo) {
+            System.out.printf("id: %d | name: %s\n", chatPair.first, chatPair.second);
         }
 
         while (true) {
@@ -36,23 +36,40 @@ public class SeeCurrentChatsCommandClient implements Command {
 
             if (option.equals("back")) {
                 output.writeUTF("back");
+                output.flush();
                 break;
-            }
-            else if (option.equals("reload")) {
+            } else if (option.equals("reload")) {
                 output.writeUTF("reload");
-                chats = vectorObjectMail.receiveObject(serverInput);
-                if (chats.isEmpty()) {
+                chatsInfo = chatObjectMail.receiveObject(serverInput);
+                if (chatsInfo.isEmpty()) {
                     System.out.println("There is no chat right now");
-                } else for (Chat chat : chats) {
-                    System.out.printf("id: %d | name: %s\n", chat.idChat, chat.chatName);
+                } else for (Pair<Integer, String> chatPair : chatsInfo) {
+                    System.out.printf("id: %d | name: %s\n", chatPair.first, chatPair.second);
                 }
             } else {
                 output.writeUTF(option);
+                output.flush();
                 boolean result = serverInput.readBoolean();
                 if (result) {
-                    input.close();
-                    serverInput.close();
-                    output.close();
+                    boolean needsPasswd = serverInput.readBoolean();
+
+                    if (needsPasswd) {
+                        String salt = serverInput.readUTF();
+
+                        System.out.println("This chat requires a password");
+                        System.out.print("Type the password: ");
+                        String passwd = input.nextLine().strip().toLowerCase(Locale.ROOT);
+
+                        String hashedPasswd = SecurePasswd.hashPassword(passwd, salt);
+                        output.writeUTF(hashedPasswd);
+
+                        boolean passwdCorrect = serverInput.readBoolean();
+                        if (!passwdCorrect) {
+                            System.out.println("Incorrect password");
+                            continue;
+                        }
+                    }
+
                     new ChatConnectorClient().execute(socket);
                     break;
                 }

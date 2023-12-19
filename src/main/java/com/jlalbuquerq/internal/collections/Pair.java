@@ -1,6 +1,8 @@
 package com.jlalbuquerq.internal.collections;
 
-public class Pair<T, E> {
+import java.io.Serializable;
+
+public class Pair<T, E> implements Serializable {
     public T first;
     public E second;
     public Pair(T first, E second) {

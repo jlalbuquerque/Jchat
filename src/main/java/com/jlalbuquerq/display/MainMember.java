@@ -13,20 +13,20 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-import static com.jlalbuquerq.internal.ScreenMethods.cls;
+import static com.jlalbuquerq.internal.display.ScreenMethods.cls;
 
 public class MainMember {
-    static Scanner input = new Scanner(System.in);
-    static Socket socket;
-    static DataOutputStream output;
-    static DataInputStream dataInputServerStream;
+    private static Socket socket;
+    private static final Scanner input = new Scanner(System.in);
+    private static DataOutputStream output;
+    private static DataInputStream serverInput;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         socket = setSocketConnection();
 
-        try {  // Setting socket connection
+        try {
             output = new DataOutputStream(socket.getOutputStream());
-            dataInputServerStream = new DataInputStream(socket.getInputStream());
+            serverInput = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,10 +49,12 @@ public class MainMember {
     }
 
     private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException, ClassNotFoundException {
-        System.out.println("""
+        System.out.println(
+                """
                 What do you want to do?:
                 1: Create new chat;
-                2: Enter existing chat.""");
+                2: Enter existing chat."""
+        );
 
         System.out.print("Your option: ");
         String option = input.nextLine().strip();
@@ -124,7 +126,6 @@ public class MainMember {
         output.writeUTF(username);
         output.flush();
 
-        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-        return dataInputStream.readBoolean();
+        return serverInput.readBoolean();
     }
 }

@@ -1,5 +1,6 @@
 package com.jlalbuquerq.server;
 
+import com.jlalbuquerq.client.Member;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.display.MainServer;
 import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
@@ -9,20 +10,19 @@ import java.net.Socket;
 
 public class ConnectionMaintainer implements Runnable {
     private final Socket socket;
-    public String clientUsername;
-    public DataInputStream clientInput;
-    public DataOutputStream output;
+    private String clientUsername;
 
-    public ConnectionMaintainer(Socket socket) {
-        this.socket = socket;
-    }
+    private DataOutputStream output;
+    private DataInputStream clientInput;
+
+    public ConnectionMaintainer(Socket socket) { this.socket = socket; }
 
     @Override
     public void run() {
         //  Input and Output setting
         try {
-            clientInput = new DataInputStream(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
+            clientInput = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -30,6 +30,7 @@ public class ConnectionMaintainer implements Runnable {
 
         // username reader
         usernamevalidator();
+        Member membersession = new Member(clientUsername);
         System.out.println("Current username list: " + MainServer.usernames);
 
 
@@ -39,10 +40,10 @@ public class ConnectionMaintainer implements Runnable {
             Command command;
             try {
                 command = commSet.receiveCommand(clientInput);
-                command.execute(socket);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
+            try {
+                command.execute(socket, membersession);
+            } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
         }
     }
 
@@ -59,6 +60,7 @@ public class ConnectionMaintainer implements Runnable {
             while (!successful) {
                 clientUsername = clientInput.readUTF();
                 output.writeBoolean(MainServer.usernames.contains(clientUsername));
+                output.flush();
 
                 successful = MainServer.usernames.add(clientUsername);
                 System.out.println("Tried to add new username: " + clientUsername);

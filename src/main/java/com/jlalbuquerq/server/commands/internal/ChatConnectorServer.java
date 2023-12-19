@@ -12,7 +12,6 @@ public class ChatConnectorServer {
         DataOutputStream output = new DataOutputStream(socket.getOutputStream());
         DataInputStream clientInput = new DataInputStream(socket.getInputStream());
 
-
-
+        System.out.println("Running ChatConnectorServer");
     }
 }

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
 
-import static com.jlalbuquerq.internal.ScreenMethods.cls;
+import static com.jlalbuquerq.internal.display.ScreenMethods.cls;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         System.out.println("Hello, welcome to Jchat! There you can communicate yourself with many other people in real time");
 
         Scanner input = new Scanner(System.in);

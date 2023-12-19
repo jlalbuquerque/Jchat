@@ -12,6 +12,5 @@ public class ChatConnectorClient {
 
 
         System.out.println("Running Chat Connector Client");
-
     }
 }

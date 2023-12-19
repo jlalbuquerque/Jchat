@@ -1,4 +1,4 @@
-package com.jlalbuquerq.internal;
+package com.jlalbuquerq.internal.display;
 
 public class ScreenMethods {
     public static void cls() {

@@ -53,7 +53,7 @@ public class SeeCurrentChatsCommandServer implements Command {
                         output.writeBoolean(false);
                     }
 
-                    new ChatConnectorServer().execute(socket, chat);
+                    new ChatConnectorServer().execute(socket, chat, membersession);
                     break;
                 }
                 else {

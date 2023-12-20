@@ -5,8 +5,12 @@ import com.jlalbuquerq.client.Member;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Chat {
     private static final AtomicInteger numberChat = new AtomicInteger(0);
@@ -19,7 +23,7 @@ public class Chat {
     private String salt;
 
     private final Member admin;
-    private final Vector<Socket> clientsSockets;
+    public final Vector<Socket> clientsSockets;
 
     // Public chat
     public Chat(String chatName, Member admin, String passwd, String salt) {
@@ -46,7 +50,6 @@ public class Chat {
             try {
                 DataOutputStream output = new DataOutputStream(socket.getOutputStream());
                 output.writeUTF("%s: %s".formatted(member.username, message));
-                output.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -56,6 +59,7 @@ public class Chat {
     public boolean checkPasswd(String hashedPasswdInput) {
         return this.hashPasswd.equals(hashedPasswdInput);
     }
+
     public String getSalt() {
         return salt;
     }

@@ -3,7 +3,8 @@ package com.jlalbuquerq.server;
 import com.jlalbuquerq.client.Member;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.display.MainServer;
-import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
+import com.jlalbuquerq.server.commands.CreateNewChatCommandServer;
+import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -36,12 +37,14 @@ public class ConnectionMaintainer implements Runnable {
 
         // Command receiver
         while (true) {
-            CommandCommunicationSetter commSet = new CommandCommunicationSetter();
             Command command;
             try {
-                command = commSet.receiveCommand(clientInput);
-            } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
-            try {
+                int i = clientInput.readInt();
+                if (i == 1) {
+                    command = new CreateNewChatCommandServer();
+                } else {
+                    command = new SeeCurrentChatsCommandServer();
+                }
                 command.execute(socket, membersession);
             } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
         }

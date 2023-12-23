@@ -20,13 +20,18 @@ public class ChatConnectorClient {
         threadPool.execute(() -> {
             Scanner input = new Scanner(System.in);
             try {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     String line = input.nextLine();
 
                     if (line.isBlank()) continue;
 
                     output.writeUTF(line);
                     output.flush();
+
+                    if (line.equals("!exit")) {
+                        threadPool.shutdownNow();
+                        return;
+                    }
                 }
             } catch (Exception ignore) {
             }
@@ -34,19 +39,18 @@ public class ChatConnectorClient {
 
         threadPool.execute(() -> {
             try {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     String line = serverInput.readUTF();
                     System.out.println(line);
                 }
             } catch (Exception ignore) {
             }
         });
+
         try {
-            threadPool.awaitTermination(1, TimeUnit.DAYS);
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
-
-
 }

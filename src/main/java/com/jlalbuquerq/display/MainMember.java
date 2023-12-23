@@ -2,9 +2,6 @@ package com.jlalbuquerq.display;
 
 import com.jlalbuquerq.client.commands.CreateNewChatCommandClient;
 import com.jlalbuquerq.client.commands.SeeCurrentChatsCommandClient;
-import com.jlalbuquerq.intercommunication.Command;
-import com.jlalbuquerq.server.commands.CreateNewChatCommandServer;
-import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
 import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
 
 import java.io.DataInputStream;
@@ -64,14 +61,11 @@ public class MainMember {
             option = input.nextLine().strip();
         }
 
-        Command action;
         if (option.equals("1")) {
-            action = new CreateNewChatCommandServer();
-            commandSetter.sendCommand(action, output);
+            output.writeInt(1);
             new CreateNewChatCommandClient().execute(socket);
         } else {
-            action = new SeeCurrentChatsCommandServer();
-            commandSetter.sendCommand(action, output);
+            output.writeInt(2);
             new SeeCurrentChatsCommandClient().execute(socket);
         }
     }

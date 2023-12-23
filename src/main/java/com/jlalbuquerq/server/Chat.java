@@ -49,7 +49,7 @@ public class Chat {
         for (Socket socket : clientsSockets) {
             try {
                 DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-                output.writeUTF("%s: %s".formatted(member.username, message));
+                output.writeUTF("%s: %s".formatted((member.username != null ? member.username : "Server"), message));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

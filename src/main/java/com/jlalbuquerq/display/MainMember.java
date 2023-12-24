@@ -2,7 +2,6 @@ package com.jlalbuquerq.display;
 
 import com.jlalbuquerq.client.commands.CreateNewChatCommandClient;
 import com.jlalbuquerq.client.commands.SeeCurrentChatsCommandClient;
-import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

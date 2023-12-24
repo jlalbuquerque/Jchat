@@ -38,20 +38,19 @@ public class MainMember {
         System.out.println("Username was set! Your username will be: " + username);
 
 
-        // Sending commands
-        CommandCommunicationSetter commandSetter = new CommandCommunicationSetter();
+        // Menu
         while (true) {
-            createOrEnterChat(commandSetter);
+            createOrEnterChat();
         }
     }
 
-    private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException, ClassNotFoundException {
+    private static void createOrEnterChat() throws IOException, ClassNotFoundException {
         System.out.println(
                 """
-                What do you want to do?:
-                1: Create new chat;
-                2: Enter existing chat."""
-        );
+                        What do you want to do?:
+                        1: Create new chat;
+                        2: Enter existing chat."""
+        );  // TODO: REFACTOR THE CODE TO THE JLINE LIBRARY
 
         System.out.print("Your option: ");
         String option = input.nextLine().strip();

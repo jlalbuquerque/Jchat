@@ -17,7 +17,31 @@ public class ChatConnectorClient {
 
         System.out.println("Running Chat Connector Client");
 
-        threadPool.execute(() -> {
+        threadPool.execute(messageInput(output, threadPool));
+
+        threadPool.execute(getMessages(serverInput));
+
+        try {
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Runnable getMessages(DataInputStream serverInput) {
+        return () -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    String line = serverInput.readUTF();
+                    System.out.println(line);
+                }
+            } catch (Exception ignore) {
+            }
+        };
+    }
+
+    private static Runnable messageInput(DataOutputStream output, ExecutorService threadPool) {
+        return () -> {
             Scanner input = new Scanner(System.in);
             try {
                 while (!Thread.currentThread().isInterrupted()) {
@@ -35,22 +59,6 @@ public class ChatConnectorClient {
                 }
             } catch (Exception ignore) {
             }
-        });
-
-        threadPool.execute(() -> {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    String line = serverInput.readUTF();
-                    System.out.println(line);
-                }
-            } catch (Exception ignore) {
-            }
-        });
-
-        try {
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        };
     }
 }

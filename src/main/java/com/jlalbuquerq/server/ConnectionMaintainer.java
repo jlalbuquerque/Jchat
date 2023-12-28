@@ -8,6 +8,7 @@ import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ConnectionMaintainer implements Runnable {
     private final Socket socket;
@@ -43,10 +44,19 @@ public class ConnectionMaintainer implements Runnable {
                 System.out.println("Received command " + i);
                 if (i == 1) {
                     command = new CreateNewChatCommandServer();
-                } else {
+                } else if (i == 2) {
                     command = new SeeCurrentChatsCommandServer();
+                } else {
+                    return;
                 }
                 command.execute(socket, membersession);
+            } catch (SocketException ignore) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
             } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
         }
     }

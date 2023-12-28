@@ -48,13 +48,14 @@ public class MainMember {
                 """
                         What do you want to do?:
                         1: Create new chat;
-                        2: Enter existing chat."""
+                        2: Enter existing chat;
+                        3: Exit."""
         );  // TODO: REFACTOR THE CODE TO THE JLINE LIBRARY
 
         System.out.print("Your option: ");
         String option = input.nextLine().strip();
-        while (!option.equals("1") && !option.equals("2")) {
-            System.out.println("Invalid option, try again (1 or 2)");
+        while (!option.equals("1") && !option.equals("2") && !option.equals("3")) {
+            System.out.println("Invalid option, try again (1 or 2 or 3)");
             System.out.print("Your option: ");
             option = input.nextLine().strip();
         }
@@ -62,9 +63,13 @@ public class MainMember {
         if (option.equals("1")) {
             output.writeInt(1);
             new CreateNewChatCommandClient().execute(socket);
-        } else {
+        } else if (option.equals("2")){
             output.writeInt(2);
             new SeeCurrentChatsCommandClient().execute(socket);
+        } else {
+            output.writeInt(3);
+            socket.close();
+            System.exit(0);
         }
     }
 

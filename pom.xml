@@ -6,7 +6,7 @@
 
     <groupId>com.jlalbuquerq</groupId>
     <artifactId>Jchat</artifactId>
-    <version>0.1-PRE_ALPHA</version>
+    <version>0.2-ALPHA</version>
     <packaging>jar</packaging>
 
     <properties>

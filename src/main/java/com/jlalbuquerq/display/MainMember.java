@@ -82,7 +82,7 @@ public class MainMember {
             } catch (IOException e) {
                 System.out.println("Server port is invalid, try again");
                 System.out.print("Server port: ");
-                port = Integer.parseInt(input.nextLine());
+                port = Integer.parseInt(input.nextLine().strip());
             }
         }
     }

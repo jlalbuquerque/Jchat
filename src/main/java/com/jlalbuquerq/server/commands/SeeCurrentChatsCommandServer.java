@@ -5,7 +5,7 @@ import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.display.MainServer;
 import com.jlalbuquerq.intercommunication.ObjectMail;
 import com.jlalbuquerq.internal.collections.Pair;
-import com.jlalbuquerq.server.Chat;
+import com.jlalbuquerq.server.chat.Chat;
 import com.jlalbuquerq.server.commands.internal.ChatConnectorServer;
 
 import java.io.*;
@@ -51,17 +51,27 @@ public class SeeCurrentChatsCommandServer implements Command {
                         if (!passwdCorrect) continue;
                     } else {
                         output.writeBoolean(false);
+                        output.flush();
+                    }
+
+                    if (chat.banList.contains(membersession)) {
+                        output.writeBoolean(false);
+                        output.flush();
+                        continue;
+                    } else {
+                        output.writeBoolean(true);
+                        output.flush();
                     }
 
                     try {
-                        new ChatConnectorServer().execute(socket, chat, membersession);
+                        new ChatConnectorServer(socket, membersession, chat).execute();
                     } catch (IOException e) {
-                        chat.clientsSockets.remove(socket);
+                        chat.memberSocketMap.remove(membersession);
+                        chat.memberConnectorMap.remove(membersession);
                         throw new RuntimeException(e);
                     }
                     break;
-                }
-                else {
+                } else {
                     output.writeBoolean(false);
                     output.flush();
                 }

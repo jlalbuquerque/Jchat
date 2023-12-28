@@ -40,6 +40,7 @@ public class ConnectionMaintainer implements Runnable {
             Command command;
             try {
                 int i = clientInput.readInt();
+                System.out.println("Received command " + i);
                 if (i == 1) {
                     command = new CreateNewChatCommandServer();
                 } else {
@@ -58,7 +59,6 @@ public class ConnectionMaintainer implements Runnable {
 
             boolean successful = MainServer.usernames.add(clientUsername);
             System.out.println("Tried to add new username: " + clientUsername);
-            System.out.println(MainServer.usernames);
 
             while (!successful) {
                 clientUsername = clientInput.readUTF();
@@ -70,7 +70,6 @@ public class ConnectionMaintainer implements Runnable {
                 System.out.println(MainServer.usernames);
             }
         } catch (IOException e) {
-            System.out.println("Got an Exception");
             throw new RuntimeException(e);
         }
     }

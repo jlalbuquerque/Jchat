@@ -1,35 +1,64 @@
 package com.jlalbuquerq.server.commands.internal;
 
 import com.jlalbuquerq.client.Member;
-import com.jlalbuquerq.server.Chat;
+import com.jlalbuquerq.server.chat.Chat;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChatConnectorServer {
-    public void execute(Socket socket, Chat chat, Member membersession) throws IOException {
-        System.out.println("Running ChatConnectorServer");
-        chat.clientsSockets.add(socket);
+    private final Socket socket;
+    private final Member membersession;
+    private final Chat chat;
+    private final AtomicBoolean ended = new AtomicBoolean(false);
 
-        DataInputStream clientInput = new DataInputStream(socket.getInputStream());
+    private DataInputStream clientInput;
 
-        try {
-            while (true) {
-                String line = clientInput.readUTF();
-                chat.sendMessage(line, membersession);
+    public ChatConnectorServer(Socket socket, Member membersession, Chat chat) {
+        this.socket = socket;
+        this.membersession = membersession;
+        this.chat = chat;
+    }
 
-                if (line.equals("!exit")) {
-                    chat.clientsSockets.remove(socket);
-                    return;
+    private Thread t;
+
+    public void execute() throws IOException {
+        chat.addMember(membersession, socket, this);
+
+        clientInput = new DataInputStream(socket.getInputStream());
+
+        t = new Thread(() -> {
+            try {
+                while (!ended.get()) {
+                    if (clientInput.available() > 0) {
+                        String line = clientInput.readUTF();
+                        if (ended.get()) return;
+
+                        chat.sendMessage(line, membersession);
+
+                        if (line.equals("!exit")) {
+                            chat.memberSocketMap.remove(membersession);
+                            chat.memberConnectorMap.remove(membersession);
+                            return;
+                        }
+                    }
                 }
-            }
-        } catch (Exception ignore) {
+            } catch (Exception ignore) {}
+        });
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    public void stop() throws IOException {
+        ended.set(true);
+        t.interrupt();
     }
 }

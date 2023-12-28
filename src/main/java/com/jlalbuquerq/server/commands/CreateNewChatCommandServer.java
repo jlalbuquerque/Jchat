@@ -4,7 +4,7 @@ import com.jlalbuquerq.client.Member;
 import com.jlalbuquerq.display.MainServer;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.internal.security.SecurePasswd;
-import com.jlalbuquerq.server.Chat;
+import com.jlalbuquerq.server.chat.Chat;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

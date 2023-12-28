@@ -1,6 +1,6 @@
 package com.jlalbuquerq.display;
 
-import com.jlalbuquerq.server.Chat;
+import com.jlalbuquerq.server.chat.Chat;
 import com.jlalbuquerq.server.ConnectionMaintainer;
 
 import java.io.IOException;

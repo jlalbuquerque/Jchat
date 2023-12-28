@@ -2,10 +2,6 @@ package com.jlalbuquerq.display;
 
 import com.jlalbuquerq.client.commands.CreateNewChatCommandClient;
 import com.jlalbuquerq.client.commands.SeeCurrentChatsCommandClient;
-import com.jlalbuquerq.intercommunication.Command;
-import com.jlalbuquerq.server.commands.CreateNewChatCommandServer;
-import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
-import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,20 +37,19 @@ public class MainMember {
         System.out.println("Username was set! Your username will be: " + username);
 
 
-        // Sending commands
-        CommandCommunicationSetter commandSetter = new CommandCommunicationSetter();
+        // Menu
         while (true) {
-            createOrEnterChat(commandSetter);
+            createOrEnterChat();
         }
     }
 
-    private static void createOrEnterChat(CommandCommunicationSetter commandSetter) throws IOException, ClassNotFoundException {
+    private static void createOrEnterChat() throws IOException, ClassNotFoundException {
         System.out.println(
                 """
-                What do you want to do?:
-                1: Create new chat;
-                2: Enter existing chat."""
-        );
+                        What do you want to do?:
+                        1: Create new chat;
+                        2: Enter existing chat."""
+        );  // TODO: REFACTOR THE CODE TO THE JLINE LIBRARY
 
         System.out.print("Your option: ");
         String option = input.nextLine().strip();
@@ -64,14 +59,11 @@ public class MainMember {
             option = input.nextLine().strip();
         }
 
-        Command action;
         if (option.equals("1")) {
-            action = new CreateNewChatCommandServer();
-            commandSetter.sendCommand(action, output);
+            output.writeInt(1);
             new CreateNewChatCommandClient().execute(socket);
         } else {
-            action = new SeeCurrentChatsCommandServer();
-            commandSetter.sendCommand(action, output);
+            output.writeInt(2);
             new SeeCurrentChatsCommandClient().execute(socket);
         }
     }
@@ -90,7 +82,7 @@ public class MainMember {
             } catch (IOException e) {
                 System.out.println("Server port is invalid, try again");
                 System.out.print("Server port: ");
-                port = Integer.parseInt(input.nextLine());
+                port = Integer.parseInt(input.nextLine().strip());
             }
         }
     }

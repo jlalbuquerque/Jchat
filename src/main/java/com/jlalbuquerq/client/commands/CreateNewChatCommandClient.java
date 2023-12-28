@@ -20,7 +20,7 @@ public class CreateNewChatCommandClient {
         String chatName;
         while (true) {
             System.out.print("Type the chat name: ");
-            chatName = input.nextLine().toLowerCase(Locale.ROOT);
+            chatName = input.nextLine();
             if (chatName.isBlank()) {
                 System.out.println("Your chat name must not be blank");
                 continue;

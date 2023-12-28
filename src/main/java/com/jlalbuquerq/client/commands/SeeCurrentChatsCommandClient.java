@@ -1,11 +1,9 @@
 package com.jlalbuquerq.client.commands;
 
 import com.jlalbuquerq.client.commands.internal.ChatConnectorClient;
-import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.intercommunication.ObjectMail;
 import com.jlalbuquerq.internal.collections.Pair;
 import com.jlalbuquerq.internal.security.SecurePasswd;
-import com.jlalbuquerq.server.Chat;
 
 import java.io.*;
 import java.net.Socket;
@@ -70,10 +68,15 @@ public class SeeCurrentChatsCommandClient {
                         }
                     }
 
-                    new ChatConnectorClient().execute(socket);
-                    break;
+                    if (serverInput.readBoolean()) {
+                        new ChatConnectorClient().execute(socket);
+                        break;
+                    } else {
+                        System.out.println("You were banned from this chat");
+                    }
+                } else {
+                    System.out.println("Chat wasn't found, try again");
                 }
-                System.out.println("Chat wasn't found, try again");
             }
         }
     }

@@ -3,7 +3,8 @@ package com.jlalbuquerq.server;
 import com.jlalbuquerq.client.Member;
 import com.jlalbuquerq.intercommunication.Command;
 import com.jlalbuquerq.display.MainServer;
-import com.jlalbuquerq.intercommunication.CommandCommunicationSetter;
+import com.jlalbuquerq.server.commands.CreateNewChatCommandServer;
+import com.jlalbuquerq.server.commands.SeeCurrentChatsCommandServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -36,12 +37,15 @@ public class ConnectionMaintainer implements Runnable {
 
         // Command receiver
         while (true) {
-            CommandCommunicationSetter commSet = new CommandCommunicationSetter();
             Command command;
             try {
-                command = commSet.receiveCommand(clientInput);
-            } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
-            try {
+                int i = clientInput.readInt();
+                System.out.println("Received command " + i);
+                if (i == 1) {
+                    command = new CreateNewChatCommandServer();
+                } else {
+                    command = new SeeCurrentChatsCommandServer();
+                }
                 command.execute(socket, membersession);
             } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
         }
@@ -55,7 +59,6 @@ public class ConnectionMaintainer implements Runnable {
 
             boolean successful = MainServer.usernames.add(clientUsername);
             System.out.println("Tried to add new username: " + clientUsername);
-            System.out.println(MainServer.usernames);
 
             while (!successful) {
                 clientUsername = clientInput.readUTF();
@@ -67,7 +70,6 @@ public class ConnectionMaintainer implements Runnable {
                 System.out.println(MainServer.usernames);
             }
         } catch (IOException e) {
-            System.out.println("Got an Exception");
             throw new RuntimeException(e);
         }
     }

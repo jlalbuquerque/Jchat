@@ -1,5 +1,6 @@
 package com.jlalbuquerq.display;
 
+import com.jlalbuquerq.display.internal.concurrent.MainServerThreadFactory;
 import com.jlalbuquerq.server.chat.Chat;
 import com.jlalbuquerq.server.ConnectionMaintainer;
 
@@ -14,7 +15,7 @@ import java.util.concurrent.*;
 
 public class MainServer {
     public static Set<String> usernames = Collections.synchronizedSet(new HashSet<>());
-    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static final ExecutorService threadPool = Executors.newCachedThreadPool(new MainServerThreadFactory());
     public static Vector<Chat> chats = new Vector<>();
 
     public static void main(String[] args) {

@@ -17,7 +17,8 @@ public class ChatCommands {
 
 
     private static final Set<String> commands = Set.of(
-            "!ban"
+            "!ban",
+            "!unban"
     );
 
     public void interpretMessage(String message, Member creator) {
@@ -33,6 +34,12 @@ public class ChatCommands {
                 chat.sendMessage("There is not enough arguments", serversession);
             } else {
                 banMember(creator, new Member(parsedMessages[1]));
+            }
+        } else if (command.equals("!unban")) {
+            if (parsedMessages.length < 2) {
+                chat.sendMessage("There is not enough arguments", serversession);
+            } else {
+                unbanMember(creator, new Member(parsedMessages[1]));
             }
         }
     }
@@ -50,7 +57,7 @@ public class ChatCommands {
                 System.out.println("Added to ban list");
 
                 System.out.println("Forcing leave");
-                forceLeave(chat, target);
+                forceLeave(target);
                 System.out.println("Ended forceLeave");
 
 
@@ -67,7 +74,7 @@ public class ChatCommands {
         }
     }
 
-    private static void forceLeave(Chat chat, Member target) {
+    private void forceLeave(Member target) {
         DataOutputStream output;
         try {
             output = new DataOutputStream(chat.memberSocketMap.get(target).getOutputStream());
@@ -75,11 +82,19 @@ public class ChatCommands {
 
             output.writeUTF("FORCE_LEAVE");
             output.flush();
-            System.out.println("Wrote FORCE_LEAVE");
 
             chat.memberConnectorMap.get(target).stop();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void unbanMember(Member creator, Member target) {
+        if (chat.admin.equals(creator)) {
+            boolean unBanned = chat.banList.remove(target);
+            chat.sendMessage(unBanned ? "The user %s is now unbanned".formatted(target.username) : "This user is not banned", serversession);
+        } else {
+            chat.sendMessage("Only the admin can unban someone", serversession);
         }
     }
 }
